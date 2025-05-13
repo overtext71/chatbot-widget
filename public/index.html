@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Coach Widget</title>
+<style>
+  body{margin:0;font-family:sans-serif;background:#fdfdfd;}
+  #chat{max-width:380px;height:520px;margin:auto;display:flex;flex-direction:column;border:1px solid #ccc;border-radius:8px;overflow:hidden;}
+  #messages{flex:1;padding:12px;overflow-y:auto;}
+  #inputRow{display:flex;border-top:1px solid #ccc;}
+  #msg{flex:1;padding:10px;border:none;font-size:14px}
+  button{padding:0 16px;border:none;background:#4B7BE5;color:#fff;font-weight:bold;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="chat">
+  <div id="messages"></div>
+  <form id="inputRow">
+    <input id="msg" autocomplete="off" placeholder="Ask me anything…">
+    <button>➤</button>
+  </form>
+</div>
+
+<script>
+const messages = document.getElementById('messages');
+const form     = document.getElementById('inputRow');
+const msgInput = document.getElementById('msg');
+
+const qs     = new URLSearchParams(location.search);
+const appTag = qs.get('app')   || 'default';
+const sysMsg = qs.get('prompt')|| 'You are a gentle, emotionally intelligent coach.';
+
+function add(role,text){
+  const div=document.createElement('div');
+  div.textContent=(role==='user'?'🙋‍♂️ ':'🤖 ')+text;
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
+}
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const text=msgInput.value.trim();
+  if(!text) return;
+  add('user',text);
+  msgInput.value='';
+
+  const res = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text,app:appTag,system:sysMsg})
+  });
+  const data = await res.json();
+  add('assistant',data.reply);
+
+  fetch('https://rtrb.app/flipbook/api/log.php',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({app:appTag,role:'assistant',text:data.reply,ts:Date.now()})
+  });
+});
+</script>
+</body>
+</html>
