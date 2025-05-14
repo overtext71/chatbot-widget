@@ -1,6 +1,14 @@
 import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const presets = {
+  sleep:  'You are a soothing sleep coach who...',
+  habits: 'You are a gentle habit coach who...',
+  relate:'You are an emotionally‑intelligent relationship coach who...'
+};
+
+const systemPrompt = presets[app] || presets.habits;
+
 export default async (req, res) => {
   if (req.method !== "POST") return res.status(405).end();
 
