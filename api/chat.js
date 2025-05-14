@@ -22,3 +22,7 @@ export default async (req, res) => {
     res.status(500).json({ error: "OpenAI error" });
   }
 };
+} catch (err) {
+  console.error('🔥 OpenAI error details:', err.response?.data || err.message || err);
+  res.status(500).json({ error: "OpenAI error" });
+}
