@@ -115,12 +115,7 @@
 </head>
 <body>
 <div id="chat">
-  <div id="messages">
-    <div style="padding: 10px; background: #fff9e6; border-radius: 12px; margin-bottom: 10px;">
-      <img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon">
-      Welcome to Pocket Coach — how can I guide you today?
-    </div>
-  </div>
+  <div id="messages"></div> <!-- Removed redundant welcome message -->
   <form id="inputRow">
     <input id="msg" autocomplete="off" placeholder="Ask me anything…">
   </form>
@@ -200,7 +195,7 @@ function saveThoughts() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'chat-content.txt';
+  a.download = 'pocket-coach-conversation.txt'; // Changed file name
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
