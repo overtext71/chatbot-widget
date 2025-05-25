@@ -27,17 +27,17 @@
   height: 32px;
   vertical-align: middle;
   margin-right: 8px;
-  border-radius: 50%; /* optional: makes icons circular */
+  border-radius: 50%;
 }
-  #messages {
+#messages {
     flex: 1;
     padding: 20px 16px 0px 16px;
     overflow-y: auto;
     font-size: 15px;
     color: #263238;
     background: #ffffff;
-  }
-  #inputRow {
+}
+#inputRow {
     display: flex;
     border-top: 1px solid #e4e8ee;
     background: #faf9f6;
@@ -45,8 +45,8 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 0;
-  }
-  #msg {
+}
+#msg {
     flex: 1;
     padding: 10px 14px;
     border-radius: 12px;
@@ -55,12 +55,12 @@
     font-size: 15px;
     outline: none;
     transition: border 0.2s;
-  }
-  #msg:focus {
+}
+#msg:focus {
     border: 1.5px solid #4B7BE5;
     background: #fff;
-  }
-  button {
+}
+button {
     border: none;
     background: #4B7BE5;
     color: #fff;
@@ -75,34 +75,53 @@
     justify-content: center;
     box-shadow: 0 2px 8px #4B7BE540;
     transition: background 0.15s;
-  }
-  button:hover {
+}
+button:hover {
     background: #315ab0;
-  }
-  form#inputRow {
-  margin: 0 !important;
-  padding: 0 !important;
 }
-
+form#inputRow {
+    margin: 0 !important;
+    padding: 0 !important;
+}
 #inputRow {
-  margin-bottom: 0 !important;
-  margin-top: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
 }
-
 #chat {
-  padding-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+/* Style for the new buttons container */
+#buttonRow {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    background: #faf9f6;
+    padding: 8px 12px;
+    border-top: 1px solid #e4e8ee;
+}
+/* Style for the save buttons */
+.save-button {
+    border-radius: 12px;
+    width: auto;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: normal;
 }
 </style>
 </head>
 <body>
 <div id="chat">
-  <div id="messages"></div>
-  <form id="inputRow">
-    <input id="msg" autocomplete="off" placeholder="Ask me anything…">
-    <button>➤</button>
-  </form>
+    <div id="messages"></div>
+    <form id="inputRow">
+        <input id="msg" autocomplete="off" placeholder="Ask me anything…">
+        <button type="submit">➤</button>
+    </form>
+    <div id="buttonRow">
+        <button type="button" class="save-button" onclick="downloadChat()">Download</button>
+        <button type="button" class="save-button" onclick="shareChat()">Share</button>
+    </div>
 </div>
 
 <script>
@@ -115,37 +134,86 @@ const appTag = qs.get('app')   || 'default';
 const sysMsg = qs.get('prompt')|| 'You are a gentle, emotionally intelligent coach.';
 
 function add(role, text) {
-  const div = document.createElement('div');
-  div.innerHTML =
-  (role === 'user'
-    ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="User" class="chat-icon"> '
-    : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Bot" class="chat-icon"> ')
-  + text;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+    const div = document.createElement('div');
+    div.innerHTML =
+    (role === 'user'
+        ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="User" class="chat-icon"> '
+        : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Bot" class="chat-icon"> ')
+    + text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
 }
 
-form.addEventListener('submit',async e=>{
-  e.preventDefault();
-  const text=msgInput.value.trim();
-  if(!text) return;
-  add('user',text);
-  msgInput.value='';
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text) return;
+    add('user', text);
+    msgInput.value = '';
 
-  const res = await fetch('/api/chat', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text,app:appTag,system:sysMsg})
-  });
-  const data = await res.json();
-  add('assistant',data.reply);
+    const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, app: appTag, system: sysMsg })
+    });
+    const data = await res.json();
+    add('assistant', data.reply);
 
-  fetch('https://rtrb.app/flipbook/api/log.php',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({app:appTag,role:'assistant',text:data.reply,ts:Date.now()})
-  });
+    fetch('https://rtrb.app/flipbook/api/log.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ app: appTag, role: 'assistant', text: data.reply, ts: Date.now() })
+    });
 });
+
+// Function to collect and format chat content
+function getChatContent() {
+    const messageDivs = messages.getElementsByTagName('div');
+    let chatText = '';
+    for (const div of messageDivs) {
+        const role = div.querySelector('img').alt;
+        const text = div.innerText.trim();
+        chatText += `${role}: ${text}\n\n`;
+    }
+    return chatText;
+}
+
+// Function to download the chat content as a .txt file
+function downloadChat() {
+    const content = getChatContent();
+    if (!content) {
+        alert('No chat content available.');
+        return;
+    }
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chat-content.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Function to share the chat content using Web Share API
+function shareChat() {
+    const content = getChatContent();
+    if (!content) {
+        alert('No chat content available.');
+        return;
+    }
+    if (navigator.share) {
+        navigator.share({
+            title: 'Chat Content',
+            text: content,
+        })
+        .then(() => console.log('Content shared successfully'))
+        .catch((error) => console.log('Error sharing content:', error));
+    } else {
+        alert('Web Share API is not supported on this browser. Try downloading the content instead.');
+    }
+}
 </script>
 </body>
 </html>
