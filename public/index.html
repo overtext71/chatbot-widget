@@ -101,7 +101,7 @@ form#inputRow {
     padding: 8px 12px;
     border-top: 1px solid #e4e8ee;
 }
-/* Style for the save buttons */
+/* Style for the save button */
 .save-button {
     border-radius: 12px;
     width: auto;
@@ -119,8 +119,7 @@ form#inputRow {
         <button type="submit">➤</button>
     </form>
     <div id="buttonRow">
-        <button type="button" class="save-button" onclick="downloadChat()">Download</button>
-        <button type="button" class="save-button" onclick="shareChat()">Share</button>
+        <button type="button" class="save-button" onclick="saveChat()">Save</button>
     </div>
 </div>
 
@@ -138,7 +137,7 @@ function add(role, text) {
     div.innerHTML =
     (role === 'user'
         ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="User" class="chat-icon"> '
-        : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Bot" class="chat-icon"> ')
+        : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ')
     + text;
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
@@ -178,8 +177,8 @@ function getChatContent() {
     return chatText;
 }
 
-// Function to download the chat content as a .txt file
-function downloadChat() {
+// Function to save the chat content as a .txt file
+function saveChat() {
     const content = getChatContent();
     if (!content) {
         alert('No chat content available.');
@@ -194,25 +193,6 @@ function downloadChat() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-}
-
-// Function to share the chat content using Web Share API
-function shareChat() {
-    const content = getChatContent();
-    if (!content) {
-        alert('No chat content available.');
-        return;
-    }
-    if (navigator.share) {
-        navigator.share({
-            title: 'Chat Content',
-            text: content,
-        })
-        .then(() => console.log('Content shared successfully'))
-        .catch((error) => console.log('Error sharing content:', error));
-    } else {
-        alert('Web Share API is not supported on this browser. Try downloading the content instead.');
-    }
 }
 </script>
 </body>
