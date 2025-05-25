@@ -16,7 +16,7 @@
     display: flex;
     flex-direction: column;
     border-radius: 16px 16px 0 0;
-    background: linear-gradient(to bottom, #fff9e6 0%, #faf9f6 20%); /* Pale yellow at top, fading to original background */
+    background: linear-gradient(to bottom, #fff9e6 0%, #faf9f6 20%);
     box-shadow: 0 8px 32px #0002;
     overflow: hidden;
     border: none;
@@ -111,11 +111,19 @@
     background: #6b8de3; /* Blue from mockup */
     color: #fff;
   }
+  /* Style for the welcome message */
+  .welcome-message {
+    background: #fff9e6; /* Faint yellow background */
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e4e8ee; /* Bottom border to distinguish */
+  }
 </style>
 </head>
 <body>
 <div id="chat">
-  <div id="messages"></div> <!-- Removed redundant welcome message -->
+  <div id="messages"></div>
   <form id="inputRow">
     <input id="msg" autocomplete="off" placeholder="Ask me anything…">
   </form>
@@ -134,9 +142,15 @@ const qs     = new URLSearchParams(location.search);
 const appTag = qs.get('app')   || 'default';
 const sysMsg = qs.get('prompt')|| 'You are a gentle, emotionally intelligent coach.';
 
-// Add initial welcome message
+// Add initial welcome message with specific styling
 window.addEventListener('load', () => {
-  add('coach', 'Welcome to Pocket Coach — how can I guide you today?');
+  const welcomeDiv = document.createElement('div');
+  welcomeDiv.className = 'welcome-message';
+  welcomeDiv.innerHTML = 
+    '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ' +
+    'Welcome to Pocket Coach — how can I guide you today?';
+  messages.appendChild(welcomeDiv);
+  messages.scrollTop = messages.scrollHeight;
 });
 
 function add(role, text) {
@@ -195,7 +209,7 @@ function saveThoughts() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'Pocket Coach Chat.txt'; // Updated file name
+  a.download = 'Pocket Coach Chat.txt';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
