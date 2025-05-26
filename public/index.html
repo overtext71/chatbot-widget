@@ -140,7 +140,8 @@ const msgInput = document.getElementById('msg');
 
 const qs     = new URLSearchParams(location.search);
 const appTag = qs.get('app')   || 'default';
-const sysMsg = qs.get('prompt')|| 'You are a gentle, emotionally intelligent coach.';
+const sysMsg = qs.get('prompt') || 
+  "You are Pocket Coach, a warm, supportive, and highly conversational habit coach. Always reply in a friendly, natural tone, as if speaking directly to the user. Use encouragement, ask gentle follow-up questions when appropriate, and help the user feel heard and understood. Give concise, actionable advice and validate their efforts.";
 
 // Add initial welcome message with specific styling
 window.addEventListener('load', () => {
