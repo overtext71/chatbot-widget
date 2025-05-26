@@ -11,7 +11,7 @@ export default async (req, res) => {
   if (req.method !== "POST") return res.status(405).end();
 
   const { text, app = "habits" } = req.body;
-  const system = presets[app] || presets.habits;
+  const system = req.body.system || presets[app] || presets.habits;
 
   try {
     const completion = await openai.chat.completions.create({
