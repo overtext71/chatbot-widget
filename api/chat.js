@@ -10,6 +10,11 @@ const presets = {
 export default async (req, res) => {
   if (req.method !== "POST") return res.status(405).end();
 
+  // CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   const { text, app = "habits" } = req.body;
   const system = req.body.system || presets[app] || presets.habits;
 
