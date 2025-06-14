@@ -6,125 +6,89 @@
 <style>
   body {
     margin: 0;
-    font-family: 'Inter', Arial, sans-serif;
-    background: #f4f6fa;
+    font-family: 'Merriweather', serif;
+    background: #4e4e4e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
   }
   #chat {
-    width: 100%;
-    height: 100%;
-    margin: 0;
+    width: 264px;
+    height: 339px;
     display: flex;
     flex-direction: column;
-    border-radius: 16px 16px 0 0;
-    background: linear-gradient(to bottom, #fff9e6 0%, #faf9f6 20%);
-    box-shadow: 0 8px 32px #0002;
+    border-radius: 16px;
+    background: #fdf6ec;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    border: none;
-    padding-bottom: 0 !important;
   }
-  .chat-icon {
-    width: 32px;
-    height: 32px;
-    vertical-align: middle;
-    margin-right: 8px;
-    border-radius: 50%;
+  .chat-header {
+    background: #fff9db;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 14px;
   }
   #messages {
     flex: 1;
-    padding: 20px 16px 0px 16px;
+    padding: 10px;
     overflow-y: auto;
-    font-size: 15px;
-    color: #263238;
-    background: #ffffff;
+    background: #f9f4e7;
+    font-size: 13px;
   }
-  #inputRow {
-    display: flex;
-    border-top: 1px solid #e4e8ee;
-    background: #faf9f6;
-    padding: 10px 12px;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 0;
+  .chat-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border-radius: 50%;
   }
-  #msg {
-    flex: 1;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #dbeafe;
-    background: #f1f5fa;
-    font-size: 15px;
-    outline: none;
-    transition: border 0.2s;
-  }
-  #msg:focus {
-    border: 1.5px solid #4B7BE5;
+  form {
+    padding: 8px;
     background: #fff;
+    border-top: 1px solid #e5e5e5;
   }
-  button {
-    border: none;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
+  input#msg {
+    width: 100%;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
   }
-  button:hover {
-    filter: brightness(90%);
-  }
-  form#inputRow {
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  #inputRow {
-    margin-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-  }
-  #chat {
-    padding-bottom: 0 !important;
-  }
-  /* Style for the button row */
   #buttonRow {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    background: #faf9f6;
-    padding: 8px 12px;
-    border-top: 1px solid #e4e8ee;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 0 8px 8px;
+    background: #fff;
   }
-  /* Style for action buttons */
   .action-button {
-    border-radius: 12px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: normal;
-    width: 120px; /* Fixed width for consistency */
+    flex: 1;
+    padding: 6px 0;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
   }
   .chat-button {
-    background: #f7c948; /* Yellow from mockup */
+    background: #fcd34d;
     color: #000;
   }
   .save-button {
-    background: #535143; /* Blue from mockup */
+    background: #3d3d3d;
     color: #fff;
-  }
-  /* Style for the welcome message */
-  .welcome-message {
-    background: #fff9e6; /* Faint yellow background */
-    padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e4e8ee; /* Bottom border to distinguish */
   }
 </style>
 </head>
 <body>
 <div id="chat">
+  <div class="chat-header">
+    💡 Welcome to Pocket Coach — how can I guide you today?
+  </div>
   <div id="messages"></div>
-  <form id="inputRow">
+  <form id="inputRow" onsubmit="event.preventDefault(); sendMessage();">
     <input id="msg" autocomplete="off" placeholder="Ask me anything…">
   </form>
   <div id="buttonRow">
@@ -135,7 +99,6 @@
 
 <script>
 const messages = document.getElementById('messages');
-const form     = document.getElementById('inputRow');
 const msgInput = document.getElementById('msg');
 
 const qs     = new URLSearchParams(location.search);
@@ -143,24 +106,17 @@ const appTag = qs.get('app')   || 'default';
 const sysMsg = qs.get('prompt') || 
   "You are Pocket Coach, a warm, supportive, and highly conversational habit coach. Always reply in a friendly, natural tone, as if speaking directly to the user. Use encouragement, ask gentle follow-up questions when appropriate, and help the user feel heard and understood. Give concise, actionable advice and validate their efforts.";
 
-// Add initial welcome message with specific styling
 window.addEventListener('load', () => {
-  const welcomeDiv = document.createElement('div');
-  welcomeDiv.className = 'welcome-message';
-  welcomeDiv.innerHTML = 
-    '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ' +
-    'Welcome to Pocket Coach — how can I guide you today?';
-  messages.appendChild(welcomeDiv);
-  messages.scrollTop = messages.scrollHeight;
+  add('coach', "Welcome to Pocket Coach — how can I guide you today?");
 });
 
 function add(role, text) {
   const div = document.createElement('div');
   div.innerHTML =
-  (role === 'me'
-    ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="Me" class="chat-icon"> '
-    : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ')
-  + text;
+    (role === 'me'
+      ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="Me" class="chat-icon"> '
+      : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ')
+    + text;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -178,7 +134,6 @@ function sendMessage() {
   })
   .then(async res => {
     if (!res.ok) {
-      // Show error in chat if backend fails
       add('coach', "Sorry, I'm having trouble responding right now. Please try again later.");
       return null;
     }
@@ -194,13 +149,11 @@ function sendMessage() {
       });
     }
   })
-  .catch(err => {
-    // Network or fetch error
+  .catch(() => {
     add('coach', "Sorry, I couldn't reach the server. Please check your connection or try again later.");
   });
 }
 
-// Function to collect and format chat content
 function getChatContent() {
   const messageDivs = messages.getElementsByTagName('div');
   let chatText = '';
@@ -212,7 +165,6 @@ function getChatContent() {
   return chatText;
 }
 
-// Function to save the chat content as a .txt file
 function saveThoughts() {
   const content = getChatContent();
   if (!content) {
