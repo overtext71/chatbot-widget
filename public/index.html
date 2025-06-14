@@ -120,8 +120,8 @@ function add(role, text) {
   const div = document.createElement('div');
   div.innerHTML =
     (role === 'me'
-      ? '<img src="https://rtrb.app/icons/rtrb-chat2-icon.png" alt="Me" class="chat-icon"> '
-      : '<img src="https://rtrb.app/icons/rtrb-chat-icon.png" alt="Coach" class="chat-icon"> ')
+      ? '<img src="https://rtrb.app/icons/rtrb-icon8.svg" alt="Me" class="chat-icon"> '
+      : '<img src="https://rtrb.app/icons/rtrb-icon.svg" alt="Coach" class="chat-icon"> ')
     + text;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
