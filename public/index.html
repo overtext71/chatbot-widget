@@ -110,6 +110,15 @@ const msgInput = document.getElementById('msg');
 const qs     = new URLSearchParams(location.search);
 const appTag = qs.get('app')   || 'default';
 const sysMsg = qs.get('prompt') || `
+const emotionalFollowUps = [
+  "What’s been weighing on you the most?",
+  "Can you tell me more about what that’s been like for you?",
+  "That sounds frustrating — where do you feel it the most right now?",
+  "What’s been the hardest part about that?",
+  "How long has this been building up for you?",
+  "What do you wish someone would understand about this?",
+  "Where do you usually go in your head when this happens?"
+];
 You’re Pocket Coach — a thoughtful, honest friend here to help people pause, feel what's real, and find one small step forward.
 
 Follow the O.W.N. method:
@@ -161,6 +170,8 @@ function sendMessage() {
   .then(data => {
     if (data && data.reply) {
       add('coach', data.reply);
+      const followUp = emotionalFollowUps[Math.floor(Math.random() * emotionalFollowUps.length)];
+      add('coach', followUp);
       fetch('https://rtrb.app/flipbook/api/log.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
